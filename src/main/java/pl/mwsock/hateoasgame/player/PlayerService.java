@@ -13,10 +13,6 @@ public class PlayerService {
         this.playerRepository = playerRepository;
     }
 
-    public String greetPlayer(String playerName){
-        return "Greetings," + playerRepository.findPlayerEntityByName(playerName).getName();
-    }
-
     public PlayerEntity savePlayer(String name){
         PlayerEntity player = new PlayerEntity();
         player.setName(name);

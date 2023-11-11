@@ -2,10 +2,10 @@ package pl.mwsock.hateoasgame.greetings;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.mwsock.hateoasgame.intro.IntroController;
 import pl.mwsock.hateoasgame.namesApi.NamesApiService;
 import pl.mwsock.hateoasgame.player.Phrase;
 import pl.mwsock.hateoasgame.player.PlayerEntity;
@@ -14,9 +14,11 @@ import pl.mwsock.hateoasgame.player.PlayerService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/")
@@ -38,7 +40,9 @@ public class GreetingsController {
         String welcomePhrase = "Greetings, Player! Choose your name.";
         Phrase phrase = new Phrase();
         phrase.setWelcomePhrase(welcomePhrase);
-        phrase.add(linkTo(methodOn(GreetingsController.class).showAvailablePlayersNames()).withSelfRel());
+        phrase.add(linkTo(methodOn(GreetingsController.class).showAvailablePlayersNames()).withSelfRel())
+                .add(linkTo(methodOn(GreetingsController.class).exitGame()).withSelfRel());
+
         return new ResponseEntity<>(phrase,HttpStatus.OK);
     }
 
@@ -46,11 +50,10 @@ public class GreetingsController {
     @GetMapping("/show_names")
     public ResponseEntity<List<PlayerEntity>> showAvailablePlayersNames(){
         List<PlayerEntity> playerEntities = new ArrayList<>();
-        for (String s : namesApiService.getNamesFromApi().getBody()) {
+        for (String s : Objects.requireNonNull(namesApiService.getNamesFromApi().getBody())) {
             PlayerEntity player = new PlayerEntity();
             player.setName(s);
-            player.add(linkTo(methodOn(GreetingsController.class).choosePlayer(player.getName())).withSelfRel()
-                    .andAffordance(afford(methodOn(GreetingsController.class).choosePlayer(player.getName()))));
+            player.add(linkTo(methodOn(GreetingsController.class).choosePlayer(player.getName())).withSelfRel());
             playerEntities.add(player);
         }
         return new ResponseEntity<>(playerEntities,HttpStatus.OK);
@@ -63,8 +66,19 @@ public class GreetingsController {
     }
 
     @PostMapping("/{name}")
-    public ResponseEntity<PlayerEntity> choosePlayer(@PathVariable String name){
+    public ResponseEntity<Phrase> choosePlayer(@PathVariable String name){
         PlayerEntity player = playerService.savePlayer(name);
-        return new ResponseEntity<>(player,HttpStatus.OK);
+        Phrase phrase = new Phrase();
+        phrase.setGreetingSpecificPlayerPhrase(player.greetPlayer());
+        phrase.add(linkTo(methodOn(IntroController.class).gameIntro())
+                .withSelfRel()
+                .withTitle("GET Method")
+        );
+        return new ResponseEntity<>(phrase,HttpStatus.OK);
+    }
+
+    @GetMapping("/exit")
+    public ResponseEntity<String> exitGame(){
+        return new ResponseEntity<>("See you next time!",HttpStatus.OK);
     }
 }

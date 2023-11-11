@@ -10,4 +10,6 @@ import org.springframework.hateoas.RepresentationModel;
 @NoArgsConstructor
 public class Phrase extends RepresentationModel<Phrase> {
     private String welcomePhrase;
+    private String greetingSpecificPlayerPhrase;
+    private String exitPhrase;
 }
