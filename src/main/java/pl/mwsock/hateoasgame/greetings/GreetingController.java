@@ -4,8 +4,10 @@ package pl.mwsock.hateoasgame.greetings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import pl.mwsock.hateoasgame.phrases.BasePhrase;
+import pl.mwsock.hateoasgame.player.PlayerDto;
 import pl.mwsock.hateoasgame.player.PlayerEntity;
 import pl.mwsock.hateoasgame.player.PlayerService;
 
@@ -30,8 +32,8 @@ public class GreetingController {
     }
 
     @GetMapping("/show_names")
-    public ResponseEntity<List<PlayerEntity>> showAvailablePlayersNames(){
-        List<PlayerEntity> playerEntities = playerService.showAvailableNames();
+    public ResponseEntity<List<PlayerDto>> showAvailablePlayersNames(){
+        List<PlayerDto> playerEntities = playerService.showAvailableNames();
         return new ResponseEntity<>(playerEntities,HttpStatus.OK);
     }
 
@@ -40,7 +42,7 @@ public class GreetingController {
         return new ResponseEntity<>(playerService.findById(id).orElse(new PlayerEntity()),HttpStatus.OK);
     }
 
-    @PostMapping("/{name}")
+    @PostMapping("/name/select/{name}")
     public ResponseEntity<BasePhrase> choosePlayerName(@PathVariable String name){
         BasePhrase basePhrase = playerService.chooseName(name);
         return new ResponseEntity<>(basePhrase,HttpStatus.OK);

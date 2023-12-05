@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Text Game</title>
+</head>
+<body>
+<h1>Wybierz imię postaci</h1>
+<form action="/chooseName" method="post">
+    <select name="name">
+        <th:block th:each="name : ${names}">
+            <option th:text="${name}"></option>
+        </th:block>
+    </select>
+    <button type="submit">Wybierz</button>
+</form>
+</body>
+</html>

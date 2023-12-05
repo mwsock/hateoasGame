@@ -12,9 +12,11 @@ public class GreetingService {
     public BasePhrase greetAndStart() {
         String welcomePhrase = "Greetings, Player! Choose your name.";
         BasePhrase basePhrase = new BasePhrase();
-        basePhrase.setWelcomePhrase(welcomePhrase);
-        basePhrase.add(linkTo(methodOn(GreetingController.class).showAvailablePlayersNames()).withSelfRel())
-                .add(linkTo(methodOn(GreetingController.class).exitGame()).withSelfRel());
+        basePhrase.setPhrase(welcomePhrase);
+        basePhrase.add(linkTo(methodOn(GreetingController.class).showAvailablePlayersNames())
+                        .withSelfRel()
+                        .withType("GET")
+                );
         return basePhrase;
     }
 }

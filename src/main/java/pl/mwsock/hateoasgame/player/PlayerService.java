@@ -42,20 +42,23 @@ public class PlayerService {
     public BasePhrase chooseName(String name) {
         PlayerEntity player = savePlayer(name);
         BasePhrase basePhrase = new BasePhrase();
-        basePhrase.setGreetingPlayerByNamePhrase(player.greetPlayer());
-        basePhrase.add(linkTo(methodOn(IntroController.class).gameIntro())
+        basePhrase.setPhrase(player.greetPlayer());
+        basePhrase.add(linkTo(methodOn(IntroController.class).gameIntro(name))
                 .withSelfRel()
-                .withTitle("GET Method")
+                .withType("GET")
         );
         return basePhrase;
     }
 
-    public List<PlayerEntity> showAvailableNames() {
-        List<PlayerEntity> playerEntities = new ArrayList<>();
+    public List<PlayerDto> showAvailableNames() {
+        List<PlayerDto> playerEntities = new ArrayList<>();
         for (String s : Objects.requireNonNull(namesApiService.getNamesFromApi().getBody())) {
-            PlayerEntity player = new PlayerEntity();
+            PlayerDto player = new PlayerDto();
             player.setName(s);
-            player.add(linkTo(methodOn(GreetingController.class).choosePlayerName(player.getName())).withSelfRel());
+            player.add(linkTo(methodOn(GreetingController.class).choosePlayerName(player.getName()))
+                    .withSelfRel()
+                    .withType("POST")
+            );
             playerEntities.add(player);
         }
         return playerEntities;
