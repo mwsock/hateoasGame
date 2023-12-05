@@ -6,14 +6,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.mwsock.hateoasgame.phrases.BasePhrase;
 
 @RestController
 @RequestMapping("/intro")
 @Slf4j
 public class IntroController {
 
-    @GetMapping("/intro")
-    public ResponseEntity<String> gameIntro(){
-        return new ResponseEntity<>("intro", HttpStatus.OK);
+    private final IntroLevelService introLevelService;
+
+    public IntroController(IntroLevelService introLevelService) {
+        this.introLevelService = introLevelService;
+    }
+
+    @GetMapping("/startLevel")
+    public ResponseEntity<BasePhrase> gameIntro(){
+        return new ResponseEntity<>(introLevelService.startLevel(), HttpStatus.OK);
     }
 }
